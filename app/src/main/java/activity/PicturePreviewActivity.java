@@ -71,13 +71,13 @@ public class PicturePreviewActivity extends PictureBaseActivity implements View.
             }
         }
     };
-//    private void getIMG() {
-//        images.add(new LocalMedia("http://img.dnbcw.net/20121129/4364580.png"));
-//        images.add(new LocalMedia("http://pic.qyer.com/album/1f0/87/1840431/index/300_200"));
-//        images.add(new LocalMedia("http://pic.qyer.com/public/supplier/jd/2016/08/05/14703934405427/600x400"));
-//        images.add(new LocalMedia("http://pic.qyer.com/lastminute/library/2014/12/26/1419562648/600x400"));
-//        images.add(new LocalMedia("http://pic.qyer.com/public/supplier/lastminute/2017/01/20/14848976973720/600x400"));
-//    }
+    private void getIMG() {
+        images.add(new LocalMedia("http://img.dnbcw.net/20121129/4364580.png"));
+        images.add(new LocalMedia("http://pic.qyer.com/album/1f0/87/1840431/index/300_200"));
+        images.add(new LocalMedia("http://pic.qyer.com/public/supplier/jd/2016/08/05/14703934405427/600x400"));
+        images.add(new LocalMedia("http://pic.qyer.com/lastminute/library/2014/12/26/1419562648/600x400"));
+        images.add(new LocalMedia("http://pic.qyer.com/public/supplier/lastminute/2017/01/20/14848976973720/600x400"));
+    }
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,7 +85,7 @@ public class PicturePreviewActivity extends PictureBaseActivity implements View.
         registerReceiver(receiver, "app.activity.finish", "app.action.finish.preview");
         Fresco.initialize(this);
 
-//        getIMG();
+        getIMG();
 
         rl_title = (RelativeLayout) findViewById(R.id.rl_title);
         left_back = (ImageButton) findViewById(R.id.left_back);
@@ -108,7 +108,7 @@ public class PicturePreviewActivity extends PictureBaseActivity implements View.
             // 底部预览按钮过来
             images = (List<LocalMedia>) getIntent().getSerializableExtra(FunctionConfig.EXTRA_PREVIEW_LIST);
         } else {
-            images = ImagesObservable.getInstance().readLocalMedias();
+//            images = ImagesObservable.getInstance().readLocalMedias();
         }
 
         selectImages = (List<LocalMedia>) getIntent().getSerializableExtra(FunctionConfig.EXTRA_PREVIEW_SELECT_LIST);
