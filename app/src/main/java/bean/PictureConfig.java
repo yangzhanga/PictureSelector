@@ -5,13 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 
 
-import activity.PictureAlbumDirectoryActivity;
-import activity.PictureExternalPreviewActivity;
 import com.example.zhangyang.photoselectdemo.R;
 
 import java.io.Serializable;
 import java.util.List;
 
+import activity.PictureImageGridActivity;
 import util.Utils;
 
 
@@ -62,7 +61,7 @@ public class PictureConfig {
             config = new FunctionConfig();
         }
         // 这里仿ios微信相册启动模式
-        Intent intent1 = new Intent(mContext, PictureAlbumDirectoryActivity.class);
+        Intent intent1 = new Intent(mContext, PictureImageGridActivity.class);
 //        Intent intent2 = new Intent(mContext, PictureImageGridActivity.class);
 //        Intent[] intents = new Intent[2];
         intent1.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -89,7 +88,7 @@ public class PictureConfig {
             Intent intent = new Intent();
             intent.putExtra(FunctionConfig.EXTRA_PREVIEW_SELECT_LIST, (Serializable) medias);
             intent.putExtra(FunctionConfig.EXTRA_POSITION, position);
-            intent.setClass(mContext, PictureExternalPreviewActivity.class);
+//            intent.setClass(mContext, PictureExternalPreviewActivity.class);
             mContext.startActivity(intent);
             ((Activity) mContext).overridePendingTransition(R.anim.toast_enter, 0);
         }

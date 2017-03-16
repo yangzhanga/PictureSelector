@@ -10,9 +10,12 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
@@ -29,6 +32,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import adapter.ImgViewPager;
 import bean.FunctionConfig;
 import bean.LocalMedia;
 import bean.LocalMediaLoader;
@@ -55,7 +59,8 @@ public class PicturePreviewActivity extends PictureBaseActivity implements View.
     private List<LocalMedia> images = new ArrayList<>();
     private List<LocalMedia> selectImages = new ArrayList<>();
     private TextView check;
-    private SimpleFragmentAdapter adapter;
+//    private SimpleFragmentAdapter adapter;
+    private ImgViewPager adapter;
     private Handler mHandler = new Handler();
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
@@ -77,15 +82,25 @@ public class PicturePreviewActivity extends PictureBaseActivity implements View.
         images.add(new LocalMedia("http://pic.qyer.com/public/supplier/jd/2016/08/05/14703934405427/600x400"));
         images.add(new LocalMedia("http://pic.qyer.com/lastminute/library/2014/12/26/1419562648/600x400"));
         images.add(new LocalMedia("http://pic.qyer.com/public/supplier/lastminute/2017/01/20/14848976973720/600x400"));
+        images.add(new LocalMedia("http://img.dnbcw.net/20121129/4364580.png"));
+        images.add(new LocalMedia("http://pic.qyer.com/album/1f0/87/1840431/index/300_200"));
+        images.add(new LocalMedia("http://pic.qyer.com/public/supplier/jd/2016/08/05/14703934405427/600x400"));
+        images.add(new LocalMedia("http://pic.qyer.com/lastminute/library/2014/12/26/1419562648/600x400"));
+        images.add(new LocalMedia("http://pic.qyer.com/public/supplier/lastminute/2017/01/20/14848976973720/600x400"));
+        images.add(new LocalMedia("http://img.dnbcw.net/20121129/4364580.png"));
+        images.add(new LocalMedia("http://pic.qyer.com/album/1f0/87/1840431/index/300_200"));
+        images.add(new LocalMedia("http://pic.qyer.com/public/supplier/jd/2016/08/05/14703934405427/600x400"));
+        images.add(new LocalMedia("http://pic.qyer.com/lastminute/library/2014/12/26/1419562648/600x400"));
+        images.add(new LocalMedia("http://pic.qyer.com/public/supplier/lastminute/2017/01/20/14848976973720/600x400"));
     }
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.picture_activity_image_preview);
         registerReceiver(receiver, "app.activity.finish", "app.action.finish.preview");
-        Fresco.initialize(this);
 
-        getIMG();
+
+//        getIMG();
 
         rl_title = (RelativeLayout) findViewById(R.id.rl_title);
         left_back = (ImageButton) findViewById(R.id.left_back);
@@ -108,7 +123,7 @@ public class PicturePreviewActivity extends PictureBaseActivity implements View.
             // 底部预览按钮过来
             images = (List<LocalMedia>) getIntent().getSerializableExtra(FunctionConfig.EXTRA_PREVIEW_LIST);
         } else {
-//            images = ImagesObservable.getInstance().readLocalMedias();
+            images = ImagesObservable.getInstance().readLocalMedias();
         }
 
         selectImages = (List<LocalMedia>) getIntent().getSerializableExtra(FunctionConfig.EXTRA_PREVIEW_SELECT_LIST);
@@ -203,7 +218,8 @@ public class PicturePreviewActivity extends PictureBaseActivity implements View.
 
     private void initViewPageAdapterData() {
         tv_title.setText(position + 1 + "/" + images.size());
-        adapter = new SimpleFragmentAdapter(getSupportFragmentManager());
+        adapter=new ImgViewPager(this,images);
+//        adapter = new SimpleFragmentAdapter(getSupportFragmentManager());
         check.setBackgroundResource(cb_drawable);
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(position);
@@ -301,23 +317,42 @@ public class PicturePreviewActivity extends PictureBaseActivity implements View.
     }
 
 
-    public class SimpleFragmentAdapter extends FragmentPagerAdapter {
-
-        public SimpleFragmentAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            PictureImagePreviewFragment fragment = PictureImagePreviewFragment.getInstance(images.get(position).getPath(), selectImages);
-            return fragment;
-        }
-
-        @Override
-        public int getCount() {
-            return images.size();
-        }
-    }
+//    public class SimpleFragmentAdapter extends FragmentStatePagerAdapter {
+//
+//
+//        public SimpleFragmentAdapter(FragmentManager fm) {
+//            super(fm);
+//        }
+//
+//
+//        @Override
+//        public int getItemPosition(Object object) {
+//            return super.getItemPosition(object);
+//
+//        }
+//
+//        @Override
+//        public Object instantiateItem(ViewGroup container, int position) {
+//            return super.instantiateItem(container, position);
+//        }
+//
+//        @Override
+//        public Fragment getItem(int position) {
+//            PictureImagePreviewFragment fragment = PictureImagePreviewFragment.getInstance(images.get(position).getPath(), selectImages);
+//            return fragment;
+//        }
+//
+//        @Override
+//        public int getCount() {
+//            return images.size();
+//        }
+//
+//        @Override
+//        public void destroyItem(ViewGroup container, int position, Object object) {
+//            super.destroyItem(container, position, object);
+//
+//        }
+//    }
 
 
     @Override

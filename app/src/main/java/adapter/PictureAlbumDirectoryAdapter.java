@@ -69,8 +69,8 @@ public class PictureAlbumDirectoryAdapter extends RecyclerView.Adapter<PictureAl
         } else {
             Glide.with(mContext)
                     .load(imagePath)
-                    .placeholder(R.drawable.ic_placeholder)
-                    .error(R.drawable.ic_placeholder)
+                    .placeholder(R.drawable.layer_bg_cover_def_60)
+                    .error(R.drawable.layer_bg_cover_def_60)
                     .centerCrop()
                     .crossFade()
                     .diskCacheStrategy(DiskCacheStrategy.RESULT)

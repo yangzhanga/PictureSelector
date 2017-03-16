@@ -29,6 +29,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import adapter.PictureAlbumDirectoryAdapter;
 import adapter.PictureImageGridAdapter;
 import bean.FunctionConfig;
 import bean.LocalMedia;
@@ -40,6 +41,7 @@ import observable.ImagesObservable;
 import util.FileUtils;
 import util.ToolbarUtil;
 import util.Utils;
+import view.PopUtils;
 import view.SweetAlertDialog;
 
 /**
@@ -70,7 +72,7 @@ public class PictureImageGridActivity extends PictureBaseActivity implements Vie
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (action.equals("app.activity.finish")) {
-                Log.e("grid","finish");
+                Log.e("grid", "finish");
                 finish();
                 overridePendingTransition(0, R.anim.slide_bottom_out);
             } else if (action.equals("app.action.refresh.data")) {
@@ -78,7 +80,7 @@ public class PictureImageGridActivity extends PictureBaseActivity implements Vie
                 if (selectImages != null)
                     adapter.bindSelectImages(selectImages);
             } else if (action.equals("app.action.crop_data")) {
-                Log.e("grid","crop_data");
+                Log.e("grid", "crop_data");
                 // 裁剪返回的数据
                 List<LocalMedia> result = (List<LocalMedia>) intent.getSerializableExtra(FunctionConfig.EXTRA_RESULT);
                 if (result == null)
@@ -184,6 +186,20 @@ public class PictureImageGridActivity extends PictureBaseActivity implements Vie
             ChangeImageNumber(selectMedias);
             adapter.bindSelectImages(selectMedias);
         }
+        picture_tv_title.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new PopUtils(PictureImageGridActivity.this, picture_tv_title, folders).setOnItemClickListener(new PictureAlbumDirectoryAdapter.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(String folderName, List<LocalMedia> images) {
+                        if (images != null && images.size() > 0) {
+
+                            adapter.bindImagesData(images);
+                        }
+                    }
+                });
+            }
+        });
         adapter.bindImagesData(images);
         adapter.setOnPhotoSelectChangedListener(PictureImageGridActivity.this);
     }
@@ -219,27 +235,8 @@ public class PictureImageGridActivity extends PictureBaseActivity implements Vie
         Intent intent = new Intent();
         int id = view.getId();
         if (id == R.id.picture_left_back) {
-//            activityFinish(1);
             activityFinish(2);//1 返回上一级  2 退出相册
-        }
-//        else if (id == R.id.id_preview) {//预览选中的图片
-//            if (Utils.isFastDoubleClick()) {
-//                return;
-//            }
-//            List<LocalMedia> selectedImages = adapter.getSelectedImages();
-//            List<LocalMedia> medias = new ArrayList<>();
-//            for (LocalMedia media : selectedImages) {
-//                medias.add(media);
-//            }
-//            intent.putExtra(FunctionConfig.EXTRA_PREVIEW_LIST, (Serializable) medias);
-//            intent.putExtra(FunctionConfig.EXTRA_PREVIEW_SELECT_LIST, (Serializable) selectedImages);
-//            intent.putExtra(FunctionConfig.EXTRA_POSITION, 0);
-//            intent.putExtra(FunctionConfig.EXTRA_BOTTOM_PREVIEW, true);
-//            intent.putExtra(FunctionConfig.EXTRA_THIS_CONFIG, config);
-//            intent.setClass(mContext, PicturePreviewActivity.class);
-//            startActivityForResult(intent, FunctionConfig.REQUEST_PREVIEW);
-//        }
-        else if (id == R.id.tv_ok) {
+        } else if (id == R.id.tv_ok) {
             List<LocalMedia> images = adapter.getSelectedImages();
             if (enableCrop && type == LocalMediaLoader.TYPE_IMAGE && selectMode == FunctionConfig.MODE_MULTIPLE) {
                 // 是图片和选择压缩并且是多张，调用批量压缩
@@ -285,9 +282,6 @@ public class PictureImageGridActivity extends PictureBaseActivity implements Vie
         if (enable) {
             tv_ok.setEnabled(true);
             tv_ok.setAlpha(1.0f);
-//            animation = AnimationUtils.loadAnimation(mContext, R.anim.modal_in);
-//            tv_img_num.startAnimation(animation);
-//            tv_img_num.setVisibility(View.VISIBLE);
             tv_ok.setText("发送(" + selectImages.size() + ")");
         } else {
             tv_ok.setEnabled(false);
@@ -326,7 +320,6 @@ public class PictureImageGridActivity extends PictureBaseActivity implements Vie
             case LocalMediaLoader.TYPE_IMAGE:
                 if (enableCrop && selectMode == FunctionConfig.MODE_SINGLE) {
                     //裁剪
-//                    startCopy(media.getPath());
                 } else if (!enableCrop && selectMode == FunctionConfig.MODE_SINGLE) {
                     ArrayList<LocalMedia> result = new ArrayList<>();
                     LocalMedia m = new LocalMedia();
@@ -375,82 +368,6 @@ public class PictureImageGridActivity extends PictureBaseActivity implements Vie
 
     }
 
-    /**
-     * 裁剪
-     *
-     * @param path
-     */
-//    protected void startCopy(String path) {
-////        // 如果开启裁剪 并且是单选
-////        // 去裁剪
-//        UCrop uCrop = UCrop.of(Uri.parse(path), Uri.fromFile(new File(getCacheDir(), System.currentTimeMillis() + ".jpg")));
-//        UCrop.Options options = new UCrop.Options();
-//        switch (copyMode) {
-//            case FunctionConfig.COPY_MODEL_DEFAULT:
-//                options.withAspectRatio(0, 0);
-//                break;
-//            case FunctionConfig.COPY_MODEL_1_1:
-//                options.withAspectRatio(1, 1);
-//                break;
-//            case FunctionConfig.COPY_MODEL_3_2:
-//                options.withAspectRatio(3, 2);
-//                break;
-//            case FunctionConfig.COPY_MODEL_3_4:
-//                options.withAspectRatio(3, 4);
-//                break;
-//            case FunctionConfig.COPY_MODEL_16_9:
-//                options.withAspectRatio(16, 9);
-//                break;
-//        }
-//
-//        options.setCompressionQuality(compressQuality);
-//        options.withMaxResultSize(cropW, cropH);
-//        options.background_color(backgroundColor);
-//        options.localType(type);
-//        options.setIsCompress(isCompress);
-//        uCrop.withOptions(options);
-//        uCrop.start(PictureImageGridActivity.this);
-//    }
-
-    /**
-     * 多图裁剪
-     *
-     * @param medias
-     */
-//    protected void startMultiCopy(List<LocalMedia> medias) {
-//        if (medias != null && medias.size() > 0) {
-//            LocalMedia media = medias.get(0);
-//            String path = media.getPath();
-//            // 去裁剪
-//            MultiUCrop uCrop = MultiUCrop.of(Uri.parse(path), Uri.fromFile(new File(getCacheDir(), System.currentTimeMillis() + ".jpg")));
-//            MultiUCrop.Options options = new MultiUCrop.Options();
-//            switch (copyMode) {
-//                case FunctionConfig.COPY_MODEL_DEFAULT:
-//                    options.withAspectRatio(0, 0);
-//                    break;
-//                case FunctionConfig.COPY_MODEL_1_1:
-//                    options.withAspectRatio(1, 1);
-//                    break;
-//                case FunctionConfig.COPY_MODEL_3_2:
-//                    options.withAspectRatio(3, 2);
-//                    break;
-//                case FunctionConfig.COPY_MODEL_3_4:
-//                    options.withAspectRatio(3, 4);
-//                    break;
-//                case FunctionConfig.COPY_MODEL_16_9:
-//                    options.withAspectRatio(16, 9);
-//                    break;
-//            }
-//            options.setLocalMedia(medias);
-//            options.setCompressionQuality(compressQuality);
-//            options.withMaxResultSize(cropW, cropH);
-//            options.background_color(backgroundColor);
-//            options.setIsCompress(isCompress);
-//            uCrop.withOptions(options);
-//            uCrop.start(PictureImageGridActivity.this);
-//        }
-//
-//    }
 
     /**
      * start to camera、preview、crop
@@ -683,46 +600,7 @@ public class PictureImageGridActivity extends PictureBaseActivity implements Vie
 
     }
 
-    /**
-     * 处理图片压缩
-     */
-//    private void compressImage(List<LocalMedia> result) {
-//        showDialog("处理中...");
-//        CompressConfig compress_config = CompressConfig.ofDefaultConfig();
-//        switch (compressFlag) {
-//            case 1:
-//                // 系统自带压缩
-//                compress_config.enablePixelCompress(config.isEnablePixelCompress());
-//                compress_config.enableQualityCompress(config.isEnableQualityCompress());
-//                break;
-//            case 2:
-//                // luban压缩
-//                LubanOptions option = new LubanOptions.Builder()
-//                        .setMaxHeight(compressH)
-//                        .setMaxWidth(compressW)
-//                        .setMaxSize(FunctionConfig.MAX_COMPRESS_SIZE)
-//                        .create();
-//                compress_config = CompressConfig.ofLuban(option);
-//                break;
-//        }
-//
-//        CompressImageOptions.compress(this, compress_config, result, new CompressInterface.CompressListener() {
-//            @Override
-//            public void onCompressSuccess(List<LocalMedia> images) {
-//                // 压缩成功回调
-//                onResult(images);
-//                dismiss();
-//            }
-//
-//            @Override
-//            public void onCompressError(List<LocalMedia> images, String msg) {
-//                // 压缩失败回调 返回原图
-//                List<LocalMedia> selectedImages = adapter.getSelectedImages();
-//                onResult(selectedImages);
-//                dismiss();
-//            }
-//        }).compress();
-//    }
+
     private void showDialog(String msg) {
         dialog = new SweetAlertDialog(PictureImageGridActivity.this);
         dialog.setTitleText(msg);

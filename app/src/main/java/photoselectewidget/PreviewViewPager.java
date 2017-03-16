@@ -20,22 +20,24 @@ public class PreviewViewPager extends ViewPager {
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent ev) {
+    public boolean onInterceptTouchEvent(MotionEvent ev)
+    {
         try {
-            return super.onTouchEvent(ev);
-        } catch (IllegalArgumentException ex) {
-            ex.printStackTrace();
+            return super.onInterceptTouchEvent(ev);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
-        return false;
     }
 
     @Override
-    public boolean onInterceptTouchEvent(MotionEvent ev) {
-        try {
-            return super.onInterceptTouchEvent(ev);
-        } catch (IllegalArgumentException ex) {
-            ex.printStackTrace();
+    public boolean onTouchEvent(MotionEvent ev)
+    {
+        try{
+            return super.onTouchEvent(ev);
+        }catch(Exception e){
+            e.printStackTrace();
+            return false;
         }
-        return false;
     }
 }

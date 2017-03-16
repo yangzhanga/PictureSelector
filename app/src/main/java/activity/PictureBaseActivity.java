@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.example.zhangyang.photoselectdemo.R;
 import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.imagepipeline.core.ImagePipelineConfig;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,7 +69,10 @@ public class PictureBaseActivity extends FragmentActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = this;
-
+        ImagePipelineConfig config1=ImagePipelineConfig.newBuilder(this)
+                .setDownsampleEnabled(true)
+                .build();
+        Fresco.initialize(this,config1);
 
         initScreenWidth();
         config = (FunctionConfig) getIntent().getSerializableExtra(FunctionConfig.EXTRA_THIS_CONFIG);

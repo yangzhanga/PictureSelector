@@ -2,8 +2,10 @@ package adapter;
 
 import android.content.Context;
 import android.graphics.PorterDuff;
+import android.net.Uri;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,9 +17,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.zhangyang.photoselectdemo.R;
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.drawee.backends.pipeline.PipelineDraweeController;
+import com.facebook.drawee.view.SimpleDraweeView;
+import com.facebook.imagepipeline.request.ImageRequest;
+import com.facebook.imagepipeline.request.ImageRequestBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,7 +66,6 @@ public class PictureImageGridAdapter extends RecyclerView.Adapter<RecyclerView.V
         this.images = images;
         notifyDataSetChanged();
     }
-
 
     public void bindSelectImages(List<LocalMedia> images) {
         this.selectImages = images;
@@ -118,7 +122,6 @@ public class PictureImageGridAdapter extends RecyclerView.Adapter<RecyclerView.V
             image.position = contentHolder.getAdapterPosition();
             String path = image.getPath();
             final int type = image.getType();
-            contentHolder.check.setBackgroundResource(cb_drawable);
             if (selectMode == FunctionConfig.MODE_SINGLE) {
                 contentHolder.ll_check.setVisibility(View.GONE);
             } else {
@@ -136,17 +139,14 @@ public class PictureImageGridAdapter extends RecyclerView.Adapter<RecyclerView.V
                 contentHolder.rl_duration.setVisibility(View.VISIBLE);
                 contentHolder.tv_duration.setText("时长：" + timeParse(duration));
             } else {
-                Glide.with(context)
-                        .load(path)
-                        .placeholder(R.drawable.image_placeholder)
-                        .crossFade()
-                        .diskCacheStrategy(DiskCacheStrategy.RESULT)
-                        .centerCrop()
-                        .into(contentHolder.picture);
+                Log.e("path", path);
+                Uri imageUri = Uri.parse("file://" + path);
+
+                contentHolder.picture.setImageURI(imageUri);
 
                 contentHolder.rl_duration.setVisibility(View.GONE);
             }
-            if (enablePreview || enablePreviewVideo) {
+            if (enablePreview || enablePreviewVideo) {//选中状态
                 contentHolder.ll_check.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -187,7 +187,7 @@ public class PictureImageGridAdapter extends RecyclerView.Adapter<RecyclerView.V
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        ImageView picture;
+        SimpleDraweeView picture;
         TextView check;
         TextView tv_duration;
         View contentView;
@@ -197,7 +197,7 @@ public class PictureImageGridAdapter extends RecyclerView.Adapter<RecyclerView.V
         public ViewHolder(View itemView) {
             super(itemView);
             contentView = itemView;
-            picture = (ImageView) itemView.findViewById(R.id.picture);
+            picture = (SimpleDraweeView) itemView.findViewById(R.id.picture);
             check = (TextView) itemView.findViewById(R.id.check);
             ll_check = (LinearLayout) itemView.findViewById(R.id.ll_check);
             tv_duration = (TextView) itemView.findViewById(R.id.tv_duration);
@@ -235,11 +235,11 @@ public class PictureImageGridAdapter extends RecyclerView.Adapter<RecyclerView.V
      */
 
     private void changeCheckboxState(ViewHolder contentHolder, LocalMedia image) {
-        boolean isChecked = contentHolder.check.isSelected();
+        boolean isChecked = (contentHolder.check.getVisibility() == View.VISIBLE) ? true : false;
 
         if (selectImages.size() >= maxSelectNum && !isChecked) {
 //            Toast.makeText(context, context.getString(R.string.message_max_num, maxSelectNum), Toast.LENGTH_LONG).show();
-            Toast.makeText(context, "你最多可以选择"+maxSelectNum+"张图片", Toast.LENGTH_LONG).show();
+            Toast.makeText(context, "你最多可以选择" + maxSelectNum + "张图片", Toast.LENGTH_LONG).show();
             return;
         }
         if (isChecked) {
@@ -254,8 +254,8 @@ public class PictureImageGridAdapter extends RecyclerView.Adapter<RecyclerView.V
             selectImages.add(image);
             image.setNum(selectImages.size());
         }
-        //通知点击项发生了改变
-        notifyItemRangeChanged(contentHolder.getAdapterPosition(), images.size());
+        //通知点击项发生了改变   会有刷新效果  图片闪动
+//        notifyItemRangeChanged(contentHolder.getAdapterPosition(), images.size());
         selectImage(contentHolder, !isChecked, true);
         if (imageSelectChangedListener != null) {
             imageSelectChangedListener.onChange(selectImages);
@@ -276,7 +276,11 @@ public class PictureImageGridAdapter extends RecyclerView.Adapter<RecyclerView.V
     }
 
     public void selectImage(ViewHolder holder, boolean isChecked, boolean isAnim) {
-        holder.check.setSelected(isChecked);
+        if (isChecked) {
+            holder.check.setVisibility(View.VISIBLE);
+        } else {
+            holder.check.setVisibility(View.INVISIBLE);
+        }
         if (isChecked) {
             if (isAnim) {
                 Animation animation = OptAnimationLoader.loadAnimation(context, R.anim.modal_in);
